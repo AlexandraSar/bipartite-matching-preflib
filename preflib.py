@@ -41,7 +41,7 @@ def maximal_matching_multipartite(G):
     Returns
     -------
     matching : set
-        A maximal matching of the graph.
+        A non-optimal maximal matching of the graph.
     """
     matching = set()
     nodes = set()
@@ -58,16 +58,23 @@ def maximal_matching_multipartite(G):
     taken_2 = set()
     changes = False
     index=1
+
+    #We divide the graph vertices into three independent sets, courses 1 in set 1, people in set 2 and courses 2 in set 3
+    #We iterate through all of these sets comparing whether the iterated match is better than the vertices existing pair. 
+    #as we are looking to maximise the sums of the two chosen ones, we are working through them in two phases
+    #This could be improved on by prioritising matches for people who have a match on the otherside of the graph when it comes to course selection
+    #So in a way, this is NOT the optimal maximal set, but implementing it would not be too difficult
+    
+    #The code has also a lot of repetition, and could easily be cut down and modularised, since we redo work
     while True:
         index +=1
         changes = False
         for one in nodes_1:
-            
-
+        
             for two in G[one].keys():
-
+                
                 weight_1 = G[one][two]['weight']
-                if one not in weights.keys():
+                if one not in weights.keys(): #i.e. if we do not have a pairfor set 1 vertex v, we assume we do not have to deal with a pairs old pairs
                     changes = True
                     weights[one] = 0
                     if two not in taken_1:
@@ -93,10 +100,6 @@ def maximal_matching_multipartite(G):
                         
                         key_list = list(pairs.keys())
                         val_list = list(pairs.values())
-                        print('\n')
-                        print(one, two, val_list)
-                        print(pairs)
-                        print(taken_1)
                         val = val_list.index(two)
 
                         key = key_list[val]
@@ -163,31 +166,6 @@ def maximal_matching_multipartite(G):
     return list(pairs.items())
     print(pairs)
                 
-                #temp_sum.append(weight_1 + weight_2)
-                #temp_pairs.append((one,two,three)) #
-        #max_sums.append(np.array(temp_sum)) #this is the vector for all the choices for node ones  sums
-        #max_sums_pairs.append(np.array(temp_pairs))#this is the vector for all the choices for node ones pairs, same index correspondance as for max_sums
-    #max_sums = np.array(max_sums) #could initialise in the beginning as numpy to clean the code up, but not worth it right now
-    #max_sums_pairs = np.array(max_sums_pairs)
-    #print(max_sums, max_sums_pairs)
-    #print(max_sums.shape, max_sums_pairs.shape)
-    #work through the matrix again to find max combination
-    #max_sum = 0
-    #pairs = set()
-    #all_sums = []
-    #all_pairs = {}
-    #for index, val in enumerate(max_sums):
-        #max_val =np.argpartition(val, 10)[-10:]
-        #ten_max = max_val[np.argsort(val[max_val])][::-1] #sort it in the correct order
-        #all_sums.append(ten_max)
-        #print(ten_max)
-        #print(max_sums_pairs[index][ten_max])
-        #print(max_sums[index][ten_max])
-        #all_pairs
-            
-        
-        
-                    
                     
                 
     for edge in G.edges():
