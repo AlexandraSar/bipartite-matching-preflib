@@ -1,6 +1,6 @@
 # bipartite-matching-preflib
-bipartite matching
-multipartite matching, naive implementation. 
+bipartite matching vs tripartite matching
+multipartite matching, naive greedy implementation. 
 
 
 uses preflib
