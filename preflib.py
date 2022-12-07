@@ -47,61 +47,120 @@ def maximal_matching_multipartite(G):
     nodes = set()
     all_nodes = np.array(G.nodes())
     all_edges = G.edges()
-    nodes_1 = set(all_nodes[0:8]) #these are very naive and static, but since this is just for proof of implementation
+    nodes_1 = set(all_nodes[0:9]) #these are very naive and static, but since this is just for proof of implementation
+    
     #It does not need further exploration
     nodes_3 = set(all_nodes[9:16])
 
-    pairs_weights = {}
-    max_sums = []
-    max_sums_pairs = []
-    index = 0
     #1st we work through all possible pairs and generate an nxmxv matrix to show all the possible combinations for the sums
     pairs, weights = {}, {}
-    taken = set()
-    for one in nodes_1:      
-        temp_sum = []
-        temp_pairs = []
-        for two in G[one].keys():
-            weight_1 = G[one][two]['weight']
-            if one not in weights:
-                weights[one] = weight_1
-                pairs[one] = two
-                taken.add(two)
-                
-            elif weights[one] < weight_1:
-                if one in taken:
-                    key_list = list(pairs.keys())
-                    val_list = list(pairs.values())
-                    val = val_list.index(one)
-                    key = key_list[val]
-                    
-                    if weights[key] < weight_1:
-                    
+    taken_1 = set()
+    taken_2 = set()
+    changes = False
+    index=1
+    while True:
+        index +=1
+        changes = False
+        for one in nodes_1:
+            
+
+            for two in G[one].keys():
+
+                weight_1 = G[one][two]['weight']
+                if one not in weights.keys():
+                    changes = True
+                    weights[one] = 0
+                    if two not in taken_1:
                         weights[one] = weight_1
+                        if one in pairs.keys():
+                            taken_1.remove(pairs[one])
                         pairs[one] = two
-                        taken.add(two)
-                           
-            for three in nodes_3:
-                weight_2 = G[two][three]['weight']
-                if two not in weights:
-                    weights[two] = weight_2
-                    pairs[two] = three
-                    taken.add(three)
+                        taken_1.add(two)
+                        
+                if weights[one] < weight_1:
+                    if two not in taken_1:
+                        changes = True
+                        weights[one] = weight_1
+                        if one in pairs.keys():
+                            taken_1.remove(pairs[one])
+                        pairs[one] = two
+                        taken_1.add(two)
                     
-                elif weights[two] < weight_2:
-                    if two in taken:
+
+
+                            
+                    if two in taken_1:
+                        
                         key_list = list(pairs.keys())
                         val_list = list(pairs.values())
-                        print(val_list, taken, two)
+                        print('\n')
+                        print(one, two, val_list)
+                        print(pairs)
+                        print(taken_1)
                         val = val_list.index(two)
+
                         key = key_list[val]
-                        print(key, two)
-                        if weights[key] < weight_2:
                         
+                        if weights[key] < weight_1:
+                            changes = True
+                            
+                            if one in pairs.keys():
+                                taken_1.remove(pairs[one])
+                            weights[one] = weight_1
+                            pairs[one] = two
+
+                            taken_1.add(two)
+
+                            del pairs[key]
+                            weights[key] = 0
+                        
+                            
+                               
+                for three in nodes_3:
+                    weight_2 = G[two][three]['weight']
+                    if two not in weights.keys():
+                        changes = True
+                        weights[two] = 0
+                        if three not in taken_2:
                             weights[two] = weight_2
                             pairs[two] = three
-                            taken.add(two)
-                            taken.remove(key)
+                            taken_2.update([three, two])
+                            
+                        
+                    if weights[two] < weight_2:
+                        if three not in taken_2:
+                            changes = True
+                            weights[two] = weight_2
+                            pairs[two] = three
+                            taken_2.add(three)
+                        
+                        if three in taken_2:
+                            
+                            key_list = list(pairs.keys())
+                            val_list = list(pairs.values())
+                            try: #This is just lazy debugging, as im missing a remove somewhere, or it is not being triggered
+                                val = val_list.index(three)
+                            except ValueError:
+                                taken_2.remove(three)
+                            #print(pairs)
+                            #print(taken)
+                            key = key_list[val]
+                            
+                            #print(key, two)
+                            if weights[key] < weight_2:
+                                changes = True
+                                weights[two] = weight_2
+                                pairs[two] = three
+                                
+                                taken_2.update([three, two])
+
+                                taken_2.remove(pairs[key])
+                                del pairs[key]
+                                weights[key] = 0
+        print(len(taken_2), index)
+        if changes == False and len(taken_1) == 9 and len(taken_2) == 13:
+            break
+    return list(pairs.items())
     print(pairs)
                 
                 #temp_sum.append(weight_1 + weight_2)
